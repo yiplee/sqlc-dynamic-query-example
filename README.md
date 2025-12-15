@@ -1,11 +1,3 @@
----
-layout: post
-title: "Combining SQLC and Squirrel for Dynamic Type-Safe Queries"
-date: 2024-01-01
-categories: [go, sql, sqlc, database]
-tags: [go, sqlc, squirrel, dynamic-queries, type-safety]
----
-
 ## Introduction
 
 When building database-driven applications in Go, developers often face a dilemma: choose type safety with [sqlc](https://sqlc.dev/) or flexibility with query builders like [Squirrel](https://github.com/Masterminds/squirrel). What if we could have both?
