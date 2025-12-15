@@ -267,23 +267,6 @@ By intercepting the database execution layer, we've successfully combined sqlc's
 
 The technique is particularly useful for building APIs with dynamic filtering, search, and pagination while maintaining the safety guarantees that sqlc provides.
 
-## Getting Started
-
-To try this out yourself:
-
-1. Clone the repository
-2. Set up your database and update the connection string in `example.go`
-3. Generate sqlc code:
-   ```bash
-   sqlc generate
-   ```
-4. Run the example:
-   ```bash
-   go run example.go
-   ```
-
-For more details and the complete implementation, check out the [full source code](https://github.com/yourusername/sqlc-dynamic-query-example).
-
 ---
 
 *This article demonstrates a practical technique for combining type-safe SQL code generation with dynamic query building. Feel free to adapt this approach to your own projects and requirements.*
