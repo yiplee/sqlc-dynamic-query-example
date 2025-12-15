@@ -74,6 +74,33 @@ The `SELECT *` is parsed by our `builder.Parse()` function to extract:
 
 **Note**: The actual SQL executed will be replaced by Squirrel, so the `SELECT *` is only used for metadata extraction during initialization.
 
+### Handling JOINs with Database VIEWs
+
+For queries that require JOINs across multiple tables, use database VIEWs. A VIEW acts as a virtual table that encapsulates the JOIN logic, allowing you to query it just like a regular table.
+
+Example:
+
+```sql
+-- In schema.sql, create a VIEW for the joined data
+CREATE VIEW user_posts AS
+SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.deleted_at, 
+       u.name, u.email, u.id as user_id
+FROM posts p
+JOIN users u ON p.user_id = u.id;
+
+-- In query.sql, query the VIEW as if it were a table
+-- name: ListUserPosts :many
+SELECT * FROM user_posts;
+```
+
+This approach allows you to:
+- Use the same dynamic query pattern for JOINed data
+- Let the database handle the JOIN logic efficiently
+- Maintain a clean separation between schema (VIEW definition) and queries
+- Query the VIEW with dynamic conditions just like any other table
+
+The `user_posts` example in this project demonstrates this pattern.
+
 ## Architecture Overview
 
 Let's examine the project structure to understand how everything fits together:
@@ -90,7 +117,7 @@ Let's examine the project structure to understand how everything fits together:
 │   ├── query.sql.go  # Generated query functions
 │   └── builder.go    # Dynamic query wrapper functions
 ├── sql/
-│   ├── schema.sql    # Database schema
+│   ├── schema.sql    # Database schema (includes VIEWs for JOINs)
 │   └── query.sql     # SQL queries for sqlc
 ├── example.go        # Usage example
 └── sqlc.yaml         # sqlc configuration
@@ -254,7 +281,7 @@ While this technique is powerful, there are some limitations to be aware of:
 1. **Prepared Statements**: Must disable `emit_prepared_queries` as mentioned above
 2. **SELECT Only**: Currently supports SELECT queries (UPDATE support can be added similarly)
 3. **Query Parsing**: Requires `SELECT * FROM table` format for metadata extraction
-4. **Single Table**: Each query should target a single table (joins require special handling)
+4. **JOINs**: For queries involving JOINs, use database VIEWs to encapsulate the join logic, then query the VIEW as a regular table (see the `user_posts` example in this project)
 
 ## Conclusion
 
