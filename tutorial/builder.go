@@ -22,7 +22,7 @@ func ListUsers(ctx context.Context, db DBTX, fn func(sb sq.SelectBuilder) sq.Sel
 	if fn != nil {
 		sb = fn(sb)
 	}
-	db = builder.SelectForQuery(db, listUsers, sb)
+	db = builder.Select(db, sb)
 	q := New(db)
 	return q.ListUsers(ctx)
 }
@@ -49,7 +49,7 @@ func ListUserPosts(ctx context.Context, db DBTX, fn func(sb sq.SelectBuilder) sq
 	if fn != nil {
 		sb = fn(sb)
 	}
-	db = builder.SelectForQuery(db, listUserPosts, sb)
+	db = builder.Select(db, sb)
 	q := New(db)
 	return q.ListUserPosts(ctx)
 }
