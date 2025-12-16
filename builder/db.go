@@ -14,9 +14,17 @@ type DBTX interface {
 	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
 }
 
-func Select(raw DBTX, sb sq.SelectBuilder) DBTX {
-	return &selecter{
-		raw: raw,
-		sb:  sb,
+// SelectForQuery wraps DBTX and overrides only the matching sqlc query.
+// If expectedQuery is empty, all QueryContext/QueryRowContext calls are overridden.
+func SelectForQuery(raw DBTX, expectedQuery string, sb sq.SelectBuilder) DBTX {
+	return &selector{
+		raw:           raw,
+		expectedQuery: expectedQuery,
+		sb:            sb,
 	}
+}
+
+func Select(raw DBTX, sb sq.SelectBuilder) DBTX {
+	// Backwards-compatible behavior: override all query calls.
+	return SelectForQuery(raw, "", sb)
 }

@@ -7,11 +7,15 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
+var (
+	reSelectFrom    = regexp.MustCompile(`(?is)^\s*select\s+(.*?)\s+from\s+([^\s;]+)`)
+	reMultiLineCmnt = regexp.MustCompile(`/\*.*?\*/`)
+)
+
 func Parse(stmt string) (table string, columns []string) {
 	stmt = stripComments(stmt)
 
-	re := regexp.MustCompile(`(?is)^\s*select\s+(.*?)\s+from\s+([^\s;]+)`)
-	matches := re.FindStringSubmatch(stmt)
+	matches := reSelectFrom.FindStringSubmatch(stmt)
 	if len(matches) < 3 {
 		return "", nil
 	}
@@ -40,8 +44,7 @@ func SelectBuilderFromStmt(stmt string) sq.SelectBuilder {
 // - Multi-line comments: `/* comment */`
 func stripComments(stmt string) string {
 	// First, remove multi-line comments /* ... */
-	reMultiLine := regexp.MustCompile(`/\*.*?\*/`)
-	stmt = reMultiLine.ReplaceAllString(stmt, "")
+	stmt = reMultiLineCmnt.ReplaceAllString(stmt, "")
 
 	// Then, remove single-line comments -- ...
 	lines := strings.Split(stmt, "\n")
